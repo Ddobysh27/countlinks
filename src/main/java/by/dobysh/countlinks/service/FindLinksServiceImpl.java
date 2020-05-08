@@ -12,6 +12,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Класс сервис, который необходим для анализа станицы
+ *
+ * @version 1.0
+ * @autor Добыш Дмитрий
+ */
 @Service
 public class FindLinksServiceImpl implements FindLinkService {
 

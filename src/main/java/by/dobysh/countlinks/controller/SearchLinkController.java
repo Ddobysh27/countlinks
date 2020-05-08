@@ -3,6 +3,7 @@ package by.dobysh.countlinks.controller;
 import by.dobysh.countlinks.exception.CustomException;
 import by.dobysh.countlinks.model.Link;
 import by.dobysh.countlinks.service.FindLinkService;
+import by.dobysh.countlinks.service.ValidatorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -33,6 +34,13 @@ public class SearchLinkController {
         this.findLinkService = findLinkService;
     }
 
+    /** Сервис проверки URL*/
+    private ValidatorService validatorService;
+
+    @Autowired
+    public void setValidatorService(ValidatorService validatorService) {
+        this.validatorService = validatorService;
+    }
 
     /**
      * Настраивает модель и представление для домашней страницы
@@ -50,6 +58,8 @@ public class SearchLinkController {
 
     /**
      * Обращается к сервису для сотставления списка всех ссылок
+     * в том случае, когда введённые данные валидны.
+     * Иначе добавляем в модель сообщения с ошибкой
      *
      * @param link ссылка
      * @param modelAndView модель и представление
@@ -58,7 +68,12 @@ public class SearchLinkController {
      */
     @PostMapping(value = "/", params = "analyze")
     public ModelAndView searchById(@ModelAttribute("link") Link link, ModelAndView modelAndView) throws IOException {
-        modelAndView.addObject("foundLinksList", findLinkService.getLinks(link.getAddress()));
+        if (validatorService.checkURL(link.getAddress())) {
+            modelAndView.addObject("foundLinksList", findLinkService.getLinks(link.getAddress()));
+        } else {
+            modelAndView.addObject("incorrectInputInfo", "Проверьте вводимые данные");
+//            modelAndView.addObject("foundLinksList", findLinkService.getLinks(link.getAddress()));
+        }
         modelAndView.setViewName("links");
         return modelAndView;
     }
